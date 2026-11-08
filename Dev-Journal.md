@@ -340,3 +340,21 @@ fn main(){
     print!("world");
 }
 ```
+
+So yeah then later today, just warming up again, I've just started with a simple perceptron code:
+
+```Rust
+fn predict(&self, x: [f64; 2]) -> i32 {
+    let mut score = 0.0;
+    for i in 0..(self.w.len()) {
+        score += self.w[i] * x[i];
+    };
+
+    score += self.b;
+
+    if score > 0.0 {
+        return 1;
+    };
+    0
+}
+```
