@@ -325,3 +325,18 @@ $$
 \delta^{(1)}_h
 = \left( \sum_j W^{(2)}_{h j} \, \delta_j \right) \text{ReLU}'(z^{(1)}_h)
 $$
+
+
+<h4 style="margin-bottom:0;">Returning to Rust</h4>
+<p style="margin-top:0; font-size:0.85em;">
+  <em>2026-11-8 · Week 1.6</em>
+</p>
+I've got so sick of this AI building treadmill. You build projects, learn nothing for what? My EEG project stalled, I tried a bunch of solutions, my mentor told me to just churn out as many different attempts as I could with AI, but I don't want to do that. I've officially downloaded RustRover, and I'm going deeper into math. I've rejoined the school math team and I intend to stay there. I'm studying for the CCC, last year one point off from the top 95th percentile, and I don't intend to let that happen this year. I've just had to readjust to Rust again. My first lines comically being:
+
+```Rust
+fn main(){
+    print!("hello");
+    println!(" world");
+    print!("world");
+}
+```
