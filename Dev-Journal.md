@@ -342,7 +342,14 @@ fn main(){
 ```
 
 So yeah then later today, just warming up again, I've just started with a simple perceptron code:
-{\fontsize{12}{14.4}\selectfont $\begin{cases}w_0x_0+w_1x_1+b\ge0 & 1\\ w_0x_0+w_1x_1+b\:<0 & 0\end{cases}$
+
+$$
+\begin{cases}
+1 & \text{if } w_0x_0 + w_1x_1 + b \ge 0 \\
+0 & \text{if } w_0x_0 + w_1x_1 + b < 0
+\end{cases}
+$$
+
 ```Rust
 fn predict(&self, x: [f64; 2]) -> i32 {
     (self.w[0] * x[0] + self.w[1] * x[1] + self.b >= 0.0) as i32
