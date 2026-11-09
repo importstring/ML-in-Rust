@@ -16,19 +16,18 @@ x: [f64; 2], w: [f64; 2], b: f64, target: 0 or 1.
 One sample has two independent binary inputs. A dataset contains all four pairs.
 Prediction uses >= 0, so the zero-initialized model initially predicts 1.
 
-Prediction and update hints:
-- Combine the input coordinates with their corresponding weights, then add bias.
-- Apply the threshold only after computing the full score.
-- Use the difference between the target and prediction to determine correction.
-- Scale each weight correction by the learning rate and its input coordinate.
-- The bias correction does not depend on an input coordinate.
+Equations and gradient rules:
+z = w[0]*x[0] + w[1]*x[1] + b
+y_hat = 1 if z >= 0, else 0
+error = y - y_hat
+w[i] <- w[i] + learning_rate * error * x[i]
+b    <- b    + learning_rate * error
 This is an online mistake-driven update, not MSE gradient descent.
 
-XOR impossibility exercise:
-Write the required score inequality for each of the four inputs.
-Be careful: a positive prediction includes zero; a negative prediction does not.
-Hint: combine the inequalities for the two positive examples and compare them
-with the inequalities for the two negative examples.
+XOR impossibility with this threshold convention:
+negative (0,0): b < 0; negative (1,1): w0+w1+b < 0.
+positive (1,0),(0,1): w0+b >= 0 and w1+b >= 0.
+Adding positives gives w0+w1+2b >= 0, incompatible with negatives.
 
 Implementation steps:
 1. Implement predict without modifying weights.
@@ -45,10 +44,10 @@ The jump to the next idea:
 A nonlinear hidden representation can make XOR separable. Chapter 2 builds one.
 
 How to practice:
-- Read the brief and the function hints before implementing.
-- Implement one function at a time, preserving its signature.
+- Read the brief and the function hints before the completed implementation.
+- Reimplement one function at a time, preserving its signature.
 - Run the named checks after each change. Compare numerical values, not just colors.
-- Complete the TODO stubs; leave the checks and runner intact.
+- These files are complete solutions, not unfinished TODO stubs.
 
 Run:
   cargo run --bin nn_01_neurons
@@ -74,7 +73,6 @@ use std::io::IsTerminal;
 // Each named case may contain several assertions. Count all cases, not just
 // displayed predictions. No sleeps, external crates, network or random seed.
 type Case = (&'static str, fn());
-
 fn close(actual: f64, expected: f64, tolerance: f64) {
     assert!(
         actual.is_finite() && expected.is_finite(),
@@ -85,7 +83,6 @@ fn close(actual: f64, expected: f64, tolerance: f64) {
         "actual={actual:.10}, expected={expected:.10}, tolerance={tolerance}"
     );
 }
-
 fn run_cases(cases: Vec<Case>) {
     let color = std::io::stdout().is_terminal() && std::env::var_os("NO_COLOR").is_none();
     let mut passed = 0;
@@ -115,62 +112,45 @@ struct Perceptron {
     w: [f64; 2],
     b: f64,
 }
-
 impl Perceptron {
     /// Hints: multiply corresponding coordinates; add bias once; threshold last.
     fn predict(&self, x: [f64; 2]) -> i32 {
-        let mut score = 0.0;
-        for i in 0..(self.w.len()) {
-            score += self.w[i] * x[i];
-        };
-
-        score += self.b;
-
-        if score > 0.0 {
-            return 1;
-        };
-        0
+        (self.w[0] * x[0] + self.w[1] * x[1] + self.b >= 0.0) as i32
     }
 }
-
 /// Hints: label minus prediction sets the update sign; use the current weights.
 /// An error-free epoch is the stopping condition, not just a small parameter change.
 fn train(data: &[([f64; 2], i32)], lr: f64, epochs: usize) -> (Perceptron, bool) {
-    // Input validation is supplied.
     assert!(!data.is_empty() && lr.is_finite() && lr > 0.0);
     assert!(data
         .iter()
         .all(|(x, y)| x.iter().all(|v| v.is_finite()) && (0..=1).contains(y)));
-
-    // TODO:
-    // - Initialize weights and bias to zero.
     let mut m = Perceptron {
         w: [0.0; 2],
         b: 0.0,
     };
-
-    // - Make at most `epochs` passes through the data.
     for _ in 0..epochs {
-        // - Predict each example using the current model.
-
-    };
-
-    // - Correct mistakes immediately, before processing the next example.
-    // - Track mistakes separately for each epoch.
-    // - Return the model and true after a complete error-free epoch.
-    // - Return the model and false if the epoch cap is exhausted.
-    // - Consider what should happen when `epochs` is zero.
-
-    todo!("Implement online perceptron training")
+        let mut mistakes = 0;
+        for &(x, y) in data {
+            let error = y - m.predict(x);
+            for i in 0..2 {
+                m.w[i] += lr * error as f64 * x[i];
+            }
+            m.b += lr * error as f64;
+            mistakes += usize::from(error != 0);
+        }
+        if mistakes == 0 {
+            return (m, true);
+        }
+    }
+    (m, false)
 }
-
 fn table(labels: [i32; 4]) -> Vec<([f64; 2], i32)> {
     [[0.0, 0.0], [0.0, 1.0], [1.0, 0.0], [1.0, 1.0]]
         .into_iter()
         .zip(labels)
         .collect()
 }
-
 fn fit_table(labels: [i32; 4]) {
     let data = table(labels);
     let (m, done) = train(&data, 0.2, 100);
@@ -207,7 +187,6 @@ fn cases() -> Vec<Case> {
         }),
     ]
 }
-
 fn demo() {
     let data = table([0, 0, 0, 1]);
     let (m, _) = train(&data, 0.2, 100);
@@ -216,18 +195,15 @@ fn demo() {
         println!("x={x:?}, target={y}, prediction={}", m.predict(x));
     }
 }
-
 fn main() {
     println!("NN Chapter 01: Train a Perceptron");
     run_cases(cases());
     println!("\nDEMONSTRATION");
     demo();
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
-
     #[test]
     fn correctness_suite() {
         run_cases(cases());

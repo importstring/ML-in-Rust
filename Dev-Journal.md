@@ -342,19 +342,10 @@ fn main(){
 ```
 
 So yeah then later today, just warming up again, I've just started with a simple perceptron code:
-
+$\begin{cases}w_0x_0+w_1x_1+b\ge0 & 1\\ w_0x_0+w_1x_1+b\:<0 & 0\end{cases}$
 ```Rust
 fn predict(&self, x: [f64; 2]) -> i32 {
-    let mut score = 0.0;
-    for i in 0..(self.w.len()) {
-        score += self.w[i] * x[i];
-    };
-
-    score += self.b;
-
-    if score > 0.0 {
-        return 1;
-    };
-    0
+    (self.w[0] * x[0] + self.w[1] * x[1] + self.b >= 0.0) as i32
 }
 ```
+
