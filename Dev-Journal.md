@@ -345,7 +345,7 @@ So yeah then later today, just warming up again, I've just started with a simple
 
 $$
 \begin{cases}
-1 & \text{if } w_0x_0 + w_1x_1 + b \ge 0 \\
+1 & \text{if } w_0x_0 + w_1x_1 + b \ge 1 \\
 0 & \text{if } w_0x_0 + w_1x_1 + b < 0
 \end{cases}
 $$
