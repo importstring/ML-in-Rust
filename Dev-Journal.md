@@ -356,3 +356,12 @@ fn predict(&self, x: [f64; 2]) -> i32 {
 }
 ```
 
+Output (ran in main.py, now in `src/solutions/atn/nn_01_neurons.rs`)
+```Txt
+Learned AND parameters: Perceptron { w: [0.4, 0.2], b: -0.4000000000000001 }
+x=[0.0, 0.0], target=0, prediction=0
+x=[0.0, 1.0], target=0, prediction=0
+x=[1.0, 0.0], target=0, prediction=0
+x=[1.0, 1.0], target=1, prediction=1
+
+```
